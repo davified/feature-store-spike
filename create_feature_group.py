@@ -11,7 +11,8 @@ from sagemaker.feature_store.feature_group import FeatureGroup
 from time import gmtime, strftime, sleep
 
 prefix = "sagemaker-featurestore-introduction"
-role = get_execution_role()
+# role = get_execution_role()
+role = 'arn:aws:iam::160071257600:role/davidtan-sagemaker-spike'
 
 sagemaker_session = sagemaker.Session()
 region = sagemaker_session.boto_region_name
@@ -23,19 +24,20 @@ example_feature_group_name = "example-feature-group-" + strftime("%d-%H-%M-%S", 
 example_feature_group = FeatureGroup(
     name=example_feature_group_name, sagemaker_session=sagemaker_session
 )
+print(f"feature group name: {example_feature_group_name}")
 
 current_time_sec = int(round(time.time()))
-record_identifier_feature_name = ""
+record_identifier_feature_name = "column_1"
 
 # load data
-example_data = pd.read_csv("data/example-training-part-1.csv")
+example_data = pd.read_csv("data/data.csv", index_col=0) # 165MB dataset
 
 # Append EventTime feature to your data frame 
 example_data["EventTime"] = pd.Series([current_time_sec] * len(example_data), dtype="float64")
 
 # Preprocess
 # convert pandas columns with dtype object to dtype string
-# columns_to_convert_to_str = obj_columns + bool_columns
+# columns_to_convert_to_str = [f'column_{n}' for n in range(1, 25, 2)]
 # for col in columns_to_convert_to_str:
 #     example_data = example_data.astype({col: pd.StringDtype()})
 
